@@ -31,21 +31,21 @@ import pro.beam.api.services.impl.ChatService;
 import pro.beam.api.services.impl.UsersService;
 
 public abstract class MJR_BeamBot {
-	private BeamUser user;
-	private BeamUser connectedChannel;
-	private BeamChat chat;
-	private BeamChatConnectable connectable;
-	private BeamAPI beam;
+	public BeamUser user;
+	public BeamUser connectedChannel;
+	public BeamChat chat;
+	public BeamChatConnectable connectable;
+	public BeamAPI beam;
 
-	private String username = "";
+	public String username = "";
 
-	private List<String> moderators;
-	private List<String> viewers;
-	private List<IncomingMessageEvent> messageIDCache;
+	public List<String> moderators;
+	public List<String> viewers;
+	public List<IncomingMessageEvent> messageIDCache;
 
-	private boolean connected = false;
-	private boolean authenticated = false;
-	private boolean debugMessages = false;
+	public boolean connected = false;
+	public boolean authenticated = false;
+	public boolean debugMessages = false;
 
 	public MJR_BeamBot(){
 		beam = new BeamAPI();
@@ -54,7 +54,7 @@ public abstract class MJR_BeamBot {
 		messageIDCache = new ArrayList<IncomingMessageEvent>();
 	}
 	
-	protected final synchronized void connect(String channel, String username, String password, String authcode) throws InterruptedException, ExecutionException {
+	public final synchronized void connect(String channel, String username, String password, String authcode) throws InterruptedException, ExecutionException {
 		this.username = username;
 		try {
 			if (debugMessages)
@@ -150,7 +150,7 @@ public abstract class MJR_BeamBot {
 		}
 	}
 
-	protected final synchronized void disconnect() {
+	public final synchronized void disconnect() {
 		connectable.disconnect();
 		viewers.clear();
 		moderators.clear();
@@ -163,7 +163,7 @@ public abstract class MJR_BeamBot {
 		connectable.send(ChatSendMethod.of(msg));
 	}
 
-	protected String deleteUserMessages(String user) {
+	public String deleteUserMessages(String user) {
 		int messagesDeleted = 0;
 		for (IncomingMessageEvent message : messageIDCache) {
 			if (user.equalsIgnoreCase(message.data.userName)) {
@@ -177,7 +177,7 @@ public abstract class MJR_BeamBot {
 		return "";
 	}
 
-	protected String deleteLastMessageForUser(String user) {
+	public String deleteLastMessageForUser(String user) {
 		int lastMessage = 0;
 		for (int i = 0; i < messageIDCache.size(); i++) {
 			if (user.equalsIgnoreCase(messageIDCache.get(i).data.userName)) {
@@ -188,12 +188,12 @@ public abstract class MJR_BeamBot {
 		return "Deleted last message for " + user + "!";
 	}
 
-	protected String deleteLastMessage() {
+	public String deleteLastMessage() {
 		connectable.delete(messageIDCache.get(messageIDCache.size() - 1).data);
 		return "Deleted last message!";
 	}
 
-	protected void ban(String user) {
+	public void ban(String user) {
 		deleteUserMessages(user);
 		String path = beam.basePath.resolve("channels/" + connectedChannel.channel.id + "/users/" + user.toLowerCase()).toString();
 		HashMap<String, Object> map = new HashMap<>();
@@ -210,7 +210,7 @@ public abstract class MJR_BeamBot {
 			System.out.println("Banned " + user);
 	}
 
-	protected void unban(String user) {
+	public void unban(String user) {
 		String path = beam.basePath.resolve("channels/" + connectedChannel.channel.id + "/users/" + user.toLowerCase()).toString();
 		HashMap<String, Object> map = new HashMap<>();
 		map.put("add", new String[] { "" });
@@ -225,7 +225,7 @@ public abstract class MJR_BeamBot {
 			System.out.println("unban " + user);
 	}
 
-	private void loadModerators() throws IOException {
+	public void loadModerators() throws IOException {
 		String result = "";
 		URL url = new URL("https://beam.pro/api/v1/channels/" + connectedChannel.channel.id + "/users");
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -258,7 +258,7 @@ public abstract class MJR_BeamBot {
 		}
 	}
 
-	private void loadViewers() throws IOException {
+	public void loadViewers() throws IOException {
 		String result = "";
 		URL url = new URL("https://beam.pro/api/v1/chats/" + connectedChannel.channel.id + "/users");
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -293,11 +293,11 @@ public abstract class MJR_BeamBot {
 		return (moderators != null) && moderators.contains(user.toLowerCase());
 	}
 
-	protected boolean isConnected() {
+	public boolean isConnected() {
 		return connected;
 	}
 
-	protected boolean isAuthenticated() {
+	public boolean isAuthenticated() {
 		return authenticated;
 	}
 
@@ -317,33 +317,33 @@ public abstract class MJR_BeamBot {
 		return viewers;
 	}
 
-	protected void setdebug(boolean value) {
+	public void setdebug(boolean value) {
 		debugMessages = value;
 	}
 
-	protected void addViewer(String viewer) {
+	public void addViewer(String viewer) {
 		if (!viewers.contains(viewer.toLowerCase()))
 			this.viewers.add(viewer.toLowerCase());
 	}
 
-	protected void removeViewer(String viewer) {
+	public void removeViewer(String viewer) {
 		if (viewers.contains(viewer.toLowerCase()))
 			viewers.remove(viewer.toLowerCase());
 	}
 
-	protected void addModerator(String moderator) {
+	public void addModerator(String moderator) {
 		if (!moderators.contains(moderator.toLowerCase()))
 			this.moderators.add(moderator.toLowerCase());
 	}
 
-	protected void removeModerator(String moderator) {
+	public void removeModerator(String moderator) {
 		if (moderators.contains(moderator.toLowerCase()))
 			moderators.remove(moderator.toLowerCase());
 	}
 
-	protected abstract void onMessage(String sender, String message);
+	public abstract void onMessage(String sender, String message);
 
-	protected abstract void onJoin(String sender);
+	public abstract void onJoin(String sender);
 
-	protected abstract void onPart(String sender);
+	public abstract void onPart(String sender);
 }
