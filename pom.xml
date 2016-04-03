@@ -6,7 +6,7 @@
  
     <groupId>com.mjr.mjrbeam</groupId>
     <artifactId>MJR_Beam_Library</artifactId>
-    <version> v1.0.0Build</version>
+    <version> v1.0.1Build</version>
 	<repositories>
 		<repository>
 			<id>beam-snapshots</id>
